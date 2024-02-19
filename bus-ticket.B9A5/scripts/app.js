@@ -1,12 +1,12 @@
 const seatLeftCounterOutputElement = document.querySelector('#seatLeftCounterOutput')
-const seatLeftCounterOutput = seatLeftCounterOutputElement.innerText
-let seatLeftCounter = parseInt(seatLeftCounterOutput)
+let seatLeftCounter = getValueById('seatLeftCounterOutput')
 
 let seatSelected = 0
+
 document.querySelector('#seatContainer').addEventListener('click', function(e) {
     if(e.target.tagName === 'BUTTON' && seatSelected < 4 && seatLeftCounter > 0) {
         seatSelected++
-        seatLeftCounter--
+        seatLeftCounter = seatLeftCounter - 1
         e.target.classList.remove('bg-[#F7F8F8]')
         e.target.classList.add('bg-[#1DD100]', 'hover:bg-[#1DD100]', 'text-white', 'selected')
         e.target.classList.contains('selected')
@@ -31,26 +31,75 @@ document.querySelector('#seatContainer').addEventListener('click', function(e) {
         if(seatSelected === 4) {
             const seatAlert = document.querySelector('#seatAlert')
             seatAlert.innerHTML = `<p style="color: red; text-align: center">Your are selected maximum seats</p>`
+            handleCouponValidity()
         }
         seatLeftCounterOutputElement.innerText = seatLeftCounter
     }
     
 })
 
-document.querySelector('#couponField').addEventListener('keyup', function(e) {
-    const inputValue = e.target.value 
-    const btn = document.querySelector('#couponBtn')
-    const couponNewElement = document.querySelector('#couponNew')
-    const couponNew = couponNewElement.innerText
-    const couponCoupleElement = document.querySelector('#couponCouple')
-    const couponCouple = couponCoupleElement.innerText
+const couponBoxElement = document.querySelector('#couponBox')
+const couponFieldElement = document.querySelector('#couponField')
+const couponNewElement = document.querySelector('#couponNew')
+const couponCoupleElement = document.querySelector('#couponCouple')
 
-    console.log(couponNew, couponCouple);
+const passengerNameInput = document.querySelector('#passengerName')
+const phoneNumberInput = document.querySelector('#phoneNumber')
 
-    if(inputValue === couponNew) {
-        btn.removeAttribute('disable')
+const couponBtn = document.querySelector('#couponBtn')
+const submitBtn = document.querySelector('#submitBtn')
+
+const couponNew = couponNewElement.innerText
+const couponCouple = couponCoupleElement.innerText
+
+couponFieldElement.addEventListener('input', handleCouponValidity)
+couponBtn.addEventListener('click', handleCoupon)
+passengerNameInput.addEventListener('input', handleFormValidity)
+phoneNumberInput.addEventListener('input', handleFormValidity)
+
+function handleCouponValidity() {
+    const couponField = couponFieldElement.value.trim()
+
+    if(couponField === couponNew || couponField === couponCouple && seatSelected === 4) {
+        couponBtn.disabled = false
     }
     else {
-        btn.setAttribute('disable', true)
+        couponBtn.disabled = true
     }
-})
+}
+
+function handleFormValidity() {
+    const passengerName = passengerNameInput.value.trim()
+    const phoneNumber = phoneNumberInput.value.trim()
+
+    if(passengerName !== '' && phoneNumber !== '') {
+        submitBtn.disabled = false
+    }
+    else {
+        submitBtn.disabled = true
+    }
+}
+
+function handleCoupon() {
+    const couponValue = couponFieldElement.value.trim()
+    const totalCost = getValueById('totalCost')
+    const grandTotalCostElement = document.querySelector('#grandTotalCost')
+
+    if(couponValue === couponNew) {
+        const grandTotalCost = totalCost - (totalCost * 0.15)
+        grandTotalCostElement.innerText = grandTotalCost
+    }
+    if(couponValue === couponCouple) {
+        const grandTotalCost = totalCost - (totalCost * 0.20)
+        grandTotalCostElement.innerText = grandTotalCost
+    }
+
+    couponBoxElement.classList.add('hidden')
+}
+
+function getValueById(elementID) {
+    const element = document.getElementById(elementID)
+    const elementText = element.innerText
+    const elementValue = parseInt(elementText)
+    return elementValue
+}
