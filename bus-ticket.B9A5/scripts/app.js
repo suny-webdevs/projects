@@ -103,3 +103,13 @@ function getValueById(elementID) {
     const elementValue = parseInt(elementText)
     return elementValue
 }
+
+const modal = document.querySelector('#modal')
+
+document.querySelector('#submitBtn').addEventListener('click', function() {
+    modal.classList.remove('hidden')
+})
+
+document.querySelector('#modalClose').addEventListener('click', function() {
+    modal.classList.add('hidden')
+})
